@@ -35,8 +35,8 @@
     <div class="md:hidden px-3 pb-2 flex gap-3 text-sm">
       <a href="#/products" class="px-3 py-1 rounded-full border">Products</a>
       <a href="#/stringing" class="px-3 py-1 rounded-full border">Stringing</a>
-      <a href="#/brands" class="px-3 py-1 rounded-full border">Brands</a>
-      <a href="#/about" class="px-3 py-1 rounded-full border">About</a>
+    <!--  <a href="#/brands" class="px-3 py-1 rounded-full border">Brands</a>-->
+    <!--  <a href="#/about" class="px-3 py-1 rounded-full border">About</a>-->
       <a href="#/contact" class="px-3 py-1 rounded-full border">Contact</a>
     </div>
   </header>
@@ -846,9 +846,9 @@ const App = {
         <div class="border-b pb-3 last:border-b-0 last:pb-0">
           <div class="flex items-center justify-between mb-2">
             <div class="font-semibold text-sm">${title}</div>
-            <button class="text-xs px-2 py-1 rounded border" onclick="Facet.toggleGroup('${gid}')" id="${gid}-btn">Collapse</button>
+            <button class="text-xs px-2 py-1 rounded border" onclick="Facet.toggleGroup('${gid}')" id="${gid}-btn">Expand</button>
           </div>
-          <div id="${gid}" class="space-y-1">
+          <div id="${gid}" class="space-y-1 hidden">
             ${values.map((v,i)=>{
               const real = rawVals? rawVals[i] : v;
               const id = `${key}-${i}`;
@@ -867,14 +867,23 @@ const App = {
     range(title, min, max, key, step=1){
       const cur = App.filters[key] || [min, max];
       const idA = key+'A', idB=key+'B';
+      const gid = `facet-${key}`;
       return `
-        <div class="text-sm">
-          <div class="font-semibold mb-1">${title}</div>
-          <div class="flex items-center gap-2">
-            <input id="${idA}" type="range" min="${min}" max="${max}" step="${step}" value="${cur[0]}" class="w-full" oninput="Facet.rangeChange('${key}',true,this.value)"/>
-            <input id="${idB}" type="range" min="${min}" max="${max}" step="${step}" value="${cur[1]}" class="w-full" oninput="Facet.rangeChange('${key}',false,this.value)"/>
+        <div class="border-b pb-3 last:border-b-0 last:pb-0">
+          <div class="flex items-center justify-between mb-2">
+            <div class="font-semibold text-sm">${title}</div>
+            <button class="text-xs px-2 py-1 rounded border" onclick="Facet.toggleGroup('${gid}')" id="${gid}-btn">Expand</button>
           </div>
-          <div class="flex justify-between text-xs text-gray-600 mt-1"><span id="${idA}v">${cur[0]}</span><span id="${idB}v">${cur[1]}</span></div>
+          <div id="${gid}" class="hidden">
+            <div class="text-sm">
+              <!-- <div class="font-semibold mb-1">${title}</div> -->
+              <div class="flex items-center gap-2">
+                <input id="${idA}" type="range" min="${min}" max="${max}" step="${step}" value="${cur[0]}" class="w-full" oninput="Facet.rangeChange('${key}',true,this.value)"/>
+                <input id="${idB}" type="range" min="${min}" max="${max}" step="${step}" value="${cur[1]}" class="w-full" oninput="Facet.rangeChange('${key}',false,this.value)"/>
+              </div>
+              <div class="flex justify-between text-xs text-gray-600 mt-1"><span id="${idA}v">${cur[0]}</span><span id="${idB}v">${cur[1]}</span></div>
+            </div>
+          </div>
         </div>`;
     },
     rangeChange(key, isA, val){
