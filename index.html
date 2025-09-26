@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Winboton 溫布頓體育用品 Demo</title>
+  <title>Winboton 溫布頓體育用品 — Demo</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Small utilities */
@@ -14,19 +14,19 @@
   <!-- Header -->
   <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b">
     <div class="mx-auto max-w-7xl px-3 sm:px-6 md:px-8 py-3 flex items-center gap-3">
-      <a href="#/" class="font-extrabold text-xl tracking-tight">Winboton <span class="text-indigo-600">溫布頓體育用品</span></a>
+  <a href="#/" class="font-extrabold text-xl tracking-tight">Winboton <span class="text-orange-500">溫布頓體育用品</span></a>
       <nav class="ml-6 hidden md:flex items-center gap-4 text-sm">
-        <a href="#/" class="hover:text-indigo-600">Home</a>
-        <a href="#/products" class="hover:text-indigo-600">Products</a>
-        <a href="#/stringing" class="hover:text-indigo-600">Stringing Service</a>
-        <a href="#/brands" class="hover:text-indigo-600">Brands</a>
-        <a href="#/about" class="hover:text-indigo-600">About</a>
-        <a href="#/contact" class="hover:text-indigo-600">Contact</a>
+  <a href="#/" class="hover:text-orange-500">Home</a>
+  <a href="#/products" class="hover:text-orange-500">Products</a>
+  <a href="#/stringing" class="hover:text-orange-500">Stringing Service</a>
+  <!-- <a href="#/brands" class="hover:text-orange-500">Brands</a> -->
+  <!-- <a href="#/about" class="hover:text-orange-500">About</a> -->
+  <a href="#/contact" class="hover:text-orange-500">Contact</a>
       </nav>
       <div class="ml-auto flex items-center gap-2 w-full md:w-auto">
         <div class="flex-1 md:flex-none md:w-80 flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1.5">
           <input id="globalSearch" placeholder="Search products, brands, categories…" class="w-full bg-transparent outline-none text-sm" />
-          <button id="btnSearch" class="text-xs px-2 py-1 rounded-full bg-indigo-600 text-white">Search</button>
+          <button id="btnSearch" class="text-xs px-2 py-1 rounded-full bg-orange-600 text-white">Search</button>
         </div>
         <button id="langToggle" class="text-xs px-2 py-1 rounded-full border">繁</button>
         <a href="#/cart" class="relative px-3 py-1 rounded-full border hover:bg-gray-50" id="cartIcon">🛒<span class="hidden" id="cartCount"></span></a>
@@ -105,7 +105,7 @@
           <!-- Stringing attach -->
           <div class="border rounded-lg p-3 mb-3">
             <label class="flex items-center gap-2 text-sm font-semibold">
-              <input type="checkbox" id="pdpStrToggle" class="accent-indigo-600" /> Add professional stringing
+              <input type="checkbox" id="pdpStrToggle" class="accent-orange-500" /> Add professional stringing
             </label>
             <div id="pdpStrPanel" class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm hidden">
               <div>
@@ -123,12 +123,12 @@
                 <select id="pdpStrPattern" class="w-full border rounded px-2 py-1"><option>2-piece</option><option>1-piece</option></select>
               </div>
               <label class="flex items-center gap-2 text-sm">
-                <input type="checkbox" id="pdpStrPre" class="accent-indigo-600" /> Pre-stretch
+                <input type="checkbox" id="pdpStrPre" class="accent-orange-500" /> Pre-stretch
               </label>
             </div>
           </div>
           <div class="flex gap-3">
-            <button id="pdpAddBtn" class="px-4 py-2 rounded-lg bg-indigo-600 text-white">Add to Cart (Quote)</button>
+            <button id="pdpAddBtn" class="px-4 py-2 rounded-lg bg-orange-600 text-white">Add to Cart (Quote)</button>
             <button onclick="UI.closePDP()" class="px-4 py-2 rounded-lg border">Close</button>
           </div>
         </div>
@@ -328,11 +328,12 @@ const App = {
     render(){
       getRoute();
       const r = App.route;
-      if(r === '/') this.home();
-      else if(r === '/products') this.products();
-      else if(r === '/brands') this.brands();
+  if(r === '/') this.home();
+  else if(r === '/products') this.products();
+  // about/brands pages disabled per request
+  // else if(r === '/brands') this.brands();
       else if(r === '/stringing') this.stringing();
-      else if(r === '/about') this.about();
+      //else if(r === '/about') this.about();
       else if(r === '/contact') this.contact();
       else if(r === '/cart') this.cart();
       else if(r === '/search') this.search();
@@ -343,7 +344,7 @@ const App = {
     home(){
       Root.innerHTML = `
         <section class="space-y-8">
-          <div class="rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-8 flex flex-col md:flex-row items-center gap-6">
+          <div class="rounded-2xl bg-gradient-to-r from-orange-600 to-orange-400 text-white p-8 flex flex-col md:flex-row items-center gap-6">
             <div class="flex-1">
               <h1 class="text-2xl md:text-4xl font-extrabold mb-2">Game, Set, Winboton.</h1>
               <p class="opacity-90">Your neighborhood hub for tennis, badminton, fitness & more—professional stringing, expert advice, and the gear you love.</p>
@@ -385,7 +386,7 @@ const App = {
             <div class="flex-1">
               <h3 class="text-lg font-bold mb-1">Professional Stringing Service</h3>
               <p class="text-sm text-gray-600 mb-3">Drop off in-store or schedule courier pickup. Choose string, gauge, and tension—get match-ready fast!</p>
-              <a href="#/stringing" class="px-4 py-2 rounded-full bg-indigo-600 text-white text-sm">Book Now</a>
+              <a href="#/stringing" class="px-4 py-2 rounded-full bg-orange-600 text-white text-sm">Book Now</a>
             </div>
             <div class="w-full md:w-80 aspect-video bg-gray-100 rounded flex items-center justify-center">Stringing Image</div>
           </div>
@@ -404,7 +405,7 @@ const App = {
               <div class="font-semibold leading-tight mb-1 line-clamp-2">${p.title_en}</div>
               <div class="text-sm font-bold">${HK(p.price)}</div>
               ${p.colors?`<div class="flex gap-1 mt-2">${p.colors.slice(0,4).map(c=>`<span title="${c}" class="w-3 h-3 rounded-full border" style="background:${c}"></span>`).join('')}</div>`:''}
-              ${p.badges?`<div class="mt-2 flex gap-1 flex-wrap">${p.badges.map(b=>`<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">${cap(b)}</span>`).join('')}</div>`:''}
+              ${p.badges?`<div class="mt-2 flex gap-1 flex-wrap">${p.badges.map(b=>`<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200">${cap(b)}</span>`).join('')}</div>`:''}
             </div>
           </button>
         </div>`).join('');
@@ -524,7 +525,7 @@ const App = {
                   <label class="block text-xs text-gray-500 mb-1">Pattern</label>
                   <select id="strPattern" class="w-full border rounded px-2 py-1"><option>2-piece</option><option>1-piece</option></select>
                 </div>
-                <label class="flex items-center gap-2 text-sm"><input id="strPre" type="checkbox" class="accent-indigo-600" /> Pre-stretch</label>
+                <label class="flex items-center gap-2 text-sm"><input id="strPre" type="checkbox" class="accent-orange-500" /> Pre-stretch</label>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 <div>
@@ -541,7 +542,7 @@ const App = {
                 </div>
               </div>
               <div class="flex gap-3">
-                <button onclick="UI.submitStringing()" class="px-4 py-2 rounded-lg bg-indigo-600 text-white">Book Stringing</button>
+                <button onclick="UI.submitStringing()" class="px-4 py-2 rounded-lg bg-orange-600 text-white">Book Stringing</button>
                 <a href="#/cart" class="px-4 py-2 rounded-lg border">Go to Cart</a>
               </div>
               <div id="strConfirm" class="hidden text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3"></div>
@@ -560,7 +561,10 @@ const App = {
       });
     },
 
-    about(){ Root.innerHTML = `<section class="prose max-w-none"><h1>About Winboton</h1><p>Winboton is your trusted neighborhood sports store for tennis, badminton, fitness, and more. We offer expert advice, quality products, and professional stringing services.</p></section>`; },
+    // About page disabled per request
+    // about(){
+    //   Root.innerHTML = `<section class="prose max-w-none"><h1>About (disabled)</h1><p>This page has been temporarily disabled.</p></section>`;
+    // },
     contact(){ Root.innerHTML = `<section class="grid md:grid-cols-2 gap-6"><div><h1 class="text-2xl font-extrabold mb-2">Contact Us</h1><div class="rounded-xl border bg-white p-4 space-y-3"><div class="grid grid-cols-1 gap-2 text-sm"><input class="border rounded px-2 py-1" placeholder="Full name"/><input class="border rounded px-2 py-1" placeholder="Email"/><input class="border rounded px-2 py-1" placeholder="Phone"/><select class="border rounded px-2 py-1"><option>Sales</option><option>Stringing</option><option>Warranty</option></select><textarea class="border rounded px-2 py-1" rows="4" placeholder="Message"></textarea></div><button class="px-4 py-2 rounded-lg bg-indigo-600 text-white">Send</button></div></div><div class="aspect-video bg-gray-100 rounded-xl overflow-hidden">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d921.8411923472407!2d114.1704329!3d22.4529228!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x34040847cbb420c3%3A0x228b774dac879a5c!2z5rqr5biD6aCT6auU6IKy55So5ZOBIFdpbmJvdG9uIFNwb3J0cyBDby4!5e0!3m2!1szh-CN!2shk!4v1758843383138!5m2!1szh-CN!2shk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></section>`; },
 
@@ -606,7 +610,7 @@ const App = {
                 <select id="qMethod" class="border rounded px-2 py-1"><option value="pickup">In-store pickup</option><option value="courier">Local courier</option></select>
                 <textarea id="qNote" class="border rounded px-2 py-1" rows="3" placeholder="Notes (e.g., need by Friday)"></textarea>
               </div>
-              <button ${items.length===0?'disabled class="w-full px-4 py-2 rounded-lg text-white bg-gray-400"':'class="w-full px-4 py-2 rounded-lg text-white bg-indigo-600 hover:opacity-95"'} onclick="UI.sendWhatsAppQuote()">Send to WhatsApp</button>
+              <button ${items.length===0?'disabled class="w-full px-4 py-2 rounded-lg text-white bg-gray-400"':'class="w-full px-4 py-2 rounded-lg text-white bg-orange-600 hover:opacity-95"'} onclick="UI.sendWhatsAppQuote()">Send to WhatsApp</button>
               <div id="qConfirm" class="hidden text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3"></div>
               <div class="text-[11px] text-gray-500">Tip: You can also copy this summary into WhatsApp to contact us directly.</div>
             </div>
@@ -829,7 +833,7 @@ const App = {
     updateCartIcon(){
       const n = App.cart.reduce((a,b)=>a + (b.qty||1), 0);
       const cc = document.getElementById('cartCount');
-      if(n>0){ cc.className = 'absolute -top-2 -right-1 text-[10px] bg-indigo-600 text-white rounded-full px-1.5 py-0.5'; cc.textContent = n; }
+  if(n>0){ cc.className = 'absolute -top-2 -right-1 text-[10px] bg-orange-600 text-white rounded-full px-1.5 py-0.5'; cc.textContent = n; }
       else { cc.className = 'hidden'; cc.textContent=''; }
     }
   };
@@ -849,7 +853,7 @@ const App = {
               const real = rawVals? rawVals[i] : v;
               const id = `${key}-${i}`;
               const checked = sel.includes(real)? 'checked' : '';
-              return `<label class="flex items-center gap-2 text-sm"><input type="checkbox" ${checked} class="accent-indigo-600" onchange="Facet.toggle('${key}','${real.replace(/'/g,"\\'")} ', this.checked)"/> <span>${v}</span></label>`;
+              return `<label class="flex items-center gap-2 text-sm"><input type="checkbox" ${checked} class="accent-orange-500" onchange="Facet.toggle('${key}','${real.replace(/'/g,"\\'")} ', this.checked)"/> <span>${v}</span></label>`;
             }).join('')}
           </div>
         </div>`;
