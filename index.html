@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Winboton 溫布頓體育用品 — Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Small utilities */
+    .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b">
+    <div class="mx-auto max-w-7xl px-3 sm:px-6 md:px-8 py-3 flex items-center gap-3">
+      <a href="#/" class="font-extrabold text-xl tracking-tight">Winboton <span class="text-indigo-600">溫布頓體育用品</span></a>
+      <nav class="ml-6 hidden md:flex items-center gap-4 text-sm">
+        <a href="#/" class="hover:text-indigo-600">Home</a>
+        <a href="#/products" class="hover:text-indigo-600">Products</a>
+        <a href="#/stringing" class="hover:text-indigo-600">Stringing Service</a>
+        <a href="#/brands" class="hover:text-indigo-600">Brands</a>
+        <a href="#/about" class="hover:text-indigo-600">About</a>
+        <a href="#/contact" class="hover:text-indigo-600">Contact</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-2 w-full md:w-auto">
+        <div class="flex-1 md:flex-none md:w-80 flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1.5">
+          <input id="globalSearch" placeholder="Search products, brands, categories…" class="w-full bg-transparent outline-none text-sm" />
+          <button id="btnSearch" class="text-xs px-2 py-1 rounded-full bg-indigo-600 text-white">Search</button>
+        </div>
+        <button id="langToggle" class="text-xs px-2 py-1 rounded-full border">繁</button>
+        <a href="#/cart" class="relative px-3 py-1 rounded-full border hover:bg-gray-50" id="cartIcon">🛒<span class="hidden" id="cartCount"></span></a>
+      </div>
+    </div>
+    <div class="md:hidden px-3 pb-2 flex gap-3 text-sm">
+      <a href="#/products" class="px-3 py-1 rounded-full border">Products</a>
+      <a href="#/stringing" class="px-3 py-1 rounded-full border">Stringing</a>
+      <a href="#/brands" class="px-3 py-1 rounded-full border">Brands</a>
+      <a href="#/about" class="px-3 py-1 rounded-full border">About</a>
+      <a href="#/contact" class="px-3 py-1 rounded-full border">Contact</a>
+    </div>
+  </header>
+
+  <!-- Main container -->
+  <main class="mx-auto max-w-7xl px-3 sm:px-6 md:px-8 py-6" id="appRoot"></main>
+
+  <!-- Footer -->
+  <footer class="border-t bg-white">
+    <div class="mx-auto max-w-7xl px-3 sm:px-6 md:px-8 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+      <div>
+        <div class="font-semibold mb-2">Shop</div>
+        <ul class="space-y-1 text-gray-600">
+          <li><a href="#/products">Tennis</a></li>
+          <li><a href="#/products">Badminton</a></li>
+          <li><a href="#/products">Fitness</a></li>
+          <li><a href="#/products">Other Sports</a></li>
+          <li><a href="#/stringing">Stringing</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold mb-2">Customer care</div>
+        <ul class="space-y-1 text-gray-600">
+          <li><a href="#/faq">FAQ</a></li>
+          <li><a href="#/policies/returns">Returns & Warranty</a></li>
+          <li><a href="#/policies/privacy">Privacy</a></li>
+          <li><a href="#/support">Customer Issues</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold mb-2">Company</div>
+        <ul class="space-y-1 text-gray-600">
+          <li><a href="#/about">About Winboton</a></li>
+          <li><a href="#/contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="text-gray-600">
+        <div class="font-semibold mb-2">Contact</div>
+        <div>123 Sports Rd, Hong Kong</div>
+        <div>Mon–Sun 11:00–20:00</div>
+        <div>WhatsApp: +852 0000 0000</div>
+        <div>Email: hello@winboton.example</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- PDP Modal -->
+  <div id="pdpModal" class="fixed inset-0 z-50 hidden bg-black/30 items-center justify-center p-3" aria-hidden="true">
+    <div class="bg-white rounded-2xl max-w-3xl w-full overflow-hidden">
+      <div class="flex items-center justify-between border-b p-4">
+        <div class="font-bold" id="pdpTitle">Product</div>
+        <button onclick="UI.closePDP()" class="text-gray-500 hover:text-gray-900">✕</button>
+      </div>
+      <div class="grid md:grid-cols-2 gap-4 p-4">
+        <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+          <img id="pdpImage" src="" alt="product image" class="max-h-full max-w-full object-contain" />
+        </div>
+        <div>
+          <div class="text-2xl font-extrabold mb-1" id="pdpPrice">HK$0</div>
+          <div class="text-xs text-gray-500 mb-3" id="pdpMeta">Brand • Category</div>
+          <ul class="text-sm text-gray-700 space-y-1 mb-3" id="pdpSpecs"></ul>
+          <div class="flex items-center gap-2 mb-4">
+            <label class="text-sm">Qty</label>
+            <input type="number" id="pdpQty" min="1" value="1" class="w-16 border rounded px-2 py-1" />
+          </div>
+          <!-- Stringing attach -->
+          <div class="border rounded-lg p-3 mb-3">
+            <label class="flex items-center gap-2 text-sm font-semibold">
+              <input type="checkbox" id="pdpStrToggle" class="accent-indigo-600" /> Add professional stringing
+            </label>
+            <div id="pdpStrPanel" class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm hidden">
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">String model</label>
+                <input id="pdpStrModel" class="w-full border rounded px-2 py-1" placeholder="e.g., BG80 / RPM Blast" />
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Tension (lbs)</label>
+                <input type="number" id="pdpStrLbs" class="w-full border rounded px-2 py-1" placeholder="e.g., 26" />
+                <div class="text-[11px] text-gray-500 mt-1" id="pdpStrKg"></div>
+                <div class="text-xs text-red-600 mt-1 hidden" id="pdpStrWarn">Outside recommended range</div>
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">Pattern</label>
+                <select id="pdpStrPattern" class="w-full border rounded px-2 py-1"><option>2-piece</option><option>1-piece</option></select>
+              </div>
+              <label class="flex items-center gap-2 text-sm">
+                <input type="checkbox" id="pdpStrPre" class="accent-indigo-600" /> Pre-stretch
+              </label>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button id="pdpAddBtn" class="px-4 py-2 rounded-lg bg-indigo-600 text-white">Add to Cart (Quote)</button>
+            <button onclick="UI.closePDP()" class="px-4 py-2 rounded-lg border">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  /********************* Demo Data *********************/
+  const BRANDS = [
+    { name: 'Yonex', blurb: 'Leading badminton & tennis technology.' },
+    { name: 'Wilson', blurb: 'Iconic tennis performance since 1913.' },
+    { name: 'Babolat', blurb: 'French tennis expertise.' },
+    { name: 'Li-Ning', blurb: 'Badminton innovation from China.' },
+    { name: 'HEAD', blurb: 'Performance rackets & accessories.' },
+  ];
+  const PRODUCTS = [
+  /*
+    { id:'p1000', slug:'yonex-astrox-88d-pro', title_en:'Yonex Astrox 88D Pro (4U)', title_zh:'尤尼克斯 天斧88D Pro (4U)', brand:'Yonex', sport:'badminton', category:'rackets', price:1680, colors:['black','red'], specs:{ weight_class_u:'4U', balance:'HH', stiffness:'stiff', recommended_tension_lbs_min:20, recommended_tension_lbs_max:28 }, badges:['bestseller'], stock:8 },
+    { id:'p2000', slug:'wilson-blade-98-16x19-v9', title_en:'Wilson Blade 98 16x19 V9', title_zh:'威爾勝 Blade 98 16x19 V9', brand:'Wilson', sport:'tennis', category:'rackets', price:1890, colors:['green','black'], specs:{ head_size_cm2:632, string_pattern:'16x19', balance:'EVEN', stiffness:'medium', recommended_tension_lbs_min:48, recommended_tension_lbs_max:58 }, badges:['new'], stock:5 },
+    { id:'p3000', slug:'babolat-rpm-blast-125', title_en:'Babolat RPM Blast 1.25mm (12m)', title_zh:'百保力 RPM Blast 1.25mm (12米)', brand:'Babolat', sport:'tennis', category:'strings', price:160, colors:['black'], specs:{ recommended_tension_lbs_min:48, recommended_tension_lbs_max:58, material:'Co-polyester' }, stock:20 },
+    { id:'p4000', slug:'lining-axforce-80', title_en:'Li-Ning Axforce 80 (3U)', title_zh:'李寧 Axforce 80 (3U)', brand:'Li-Ning', sport:'badminton', category:'rackets', price:1580, colors:['blue','white'], specs:{ weight_class_u:'3U', balance:'HH', stiffness:'stiff', recommended_tension_lbs_min:22, recommended_tension_lbs_max:30 }, stock:6 },
+    { id:'p5000', slug:'head-core-9r-bag', title_en:'HEAD Core 9R Tennis Bag', title_zh:'海德 Core 9支裝網球袋', brand:'HEAD', sport:'tennis', category:'bags', price:520, colors:['black','orange'], specs:{ material:'Polyester' }, stock:12 },
+    { id:'p6000', slug:'yonex-power-cushion-65x3', title_en:'Yonex Power Cushion 65X3 (Men)', title_zh:'尤尼克斯 65X3 男款羽球鞋', brand:'Yonex', sport:'badminton', category:'shoes', price:880, colors:['white','navy'], specs:{ material:'Synthetic Leather + Mesh' }, stock:10 },
+  */
+
+//{ id:'pBR001', slug:'GOMA Fusiontec 799', title_en:'GOMA Fusiontec 799', title_zh:'GOMA Fusiontec 799', brand:'GOMA', sport:'badminton', category:'rackets', price:200, colors:['orange', 'black', 'white'], specs:{recommended_tension_lbs_max:'/', recommended_tension_lbs_min:'/'}, stock:1},
+{ id:'pBR002', slug:'PROKENNEX Power Pro 707', title_en:'PROKENNEX Power Pro 707', title_zh:'PROKENNEX Power Pro 707', brand:'PROKENNEX', sport:'badminton', category:'rackets', price:540, colors:['yellow', 'black', 'white'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5'}, stock:1},
+//{ id:'pBR003', slug:'DUNLOP Bionize 5100', title_en:'DUNLOP Bionize 5100', title_zh:'DUNLOP Bionize 5100', brand:'DUNLOP', sport:'badminton', category:'rackets', price:470, colors:['cyan'], specs:{recommended_tension_lbs_max:'/', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G6', balance:'1 - Head Heavy', stiffness:'進攻'}, stock:1},
+{ id:'pBR004', slug:'Yonex Astrox 99 Game', title_en:'Yonex Astrox 99 Game', title_zh:'Yonex Astrox 99 Game', brand:'Yonex', sport:'badminton', category:'rackets', price:860, colors:['green', 'black'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', weight_class_u:'4U', grip_class_g:'G5', balance:'1 - Head Heavy', stiffness:'進攻'}, stock:1},
+{ id:'pBR005', slug:'PROKENNEX Kinetic Extreme Speed', title_en:'PROKENNEX Kinetic Extreme Speed', title_zh:'PROKENNEX Kinetic Extreme Speed', brand:'PROKENNEX', sport:'badminton', category:'rackets', price:900, colors:['silver', 'yellow'], specs:{recommended_tension_lbs_max:'32', recommended_tension_lbs_min:'22', weight_class_u:'4U', grip_class_g:'G2', balance:'2', stiffness:'進攻'}, stock:1},
+{ id:'pBR006', slug:'PROKENNEX Power pro 706', title_en:'PROKENNEX Power pro 706', title_zh:'PROKENNEX Power pro 706', brand:'PROKENNEX', sport:'badminton', category:'rackets', price:540, colors:['orange', 'black'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5'}, stock:1},
+//{ id:'pBR007', slug:'DUNLOP Bionize 2100', title_en:'DUNLOP Bionize 2100', title_zh:'DUNLOP Bionize 2100', brand:'DUNLOP', sport:'badminton', category:'rackets', price:530, colors:['yellow'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'/', weight_class_u:'4U', balance:'2'}, stock:1},
+{ id:'pBR008', slug:'Yonex ArcSaber 7 Play', title_en:'Yonex ArcSaber 7 Play', title_zh:'Yonex ArcSaber 7 Play', brand:'Yonex', sport:'badminton', category:'rackets', price:610, colors:['yellow', 'black'], specs:{recommended_tension_lbs_max:'27', recommended_tension_lbs_min:'19', weight_class_u:'4U', grip_class_g:'G5', balance:'3 - Even Balanced', stiffness:'全面'}, stock:1},
+{ id:'pBR009', slug:'Yonex ArcSaber 73 Light', title_en:'Yonex ArcSaber 73 Light', title_zh:'Yonex ArcSaber 73 Light', brand:'Yonex', sport:'badminton', category:'rackets', price:570, colors:['yellow'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'20', weight_class_u:'5U', grip_class_g:'G5', balance:'3 - Even Balanced', stiffness:'全面'}, stock:1},
+{ id:'pBR010', slug:'Yonex Astrox 01 Feel', title_en:'Yonex Astrox 01 Feel', title_zh:'Yonex Astrox 01 Feel', brand:'Yonex', sport:'badminton', category:'rackets', price:610, colors:['cyan'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', weight_class_u:'4U', grip_class_g:'G5', balance:'1 - Head Heavy', stiffness:'進攻'}, stock:1},
+//{ id:'pBR011', slug:'Yonex Nanoray 72 Light', title_en:'Yonex Nanoray 72 Light', title_zh:'Yonex Nanoray 72 Light', brand:'Yonex', sport:'badminton', category:'rackets', price:500, colors:['silver'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'20', weight_class_u:'5U', grip_class_g:'G5', stiffness:'靈巧'}, stock:1},
+{ id:'pBR012', slug:'Gosen  Roots XF 100 炫風', title_en:'Gosen  Roots XF 100 炫風', title_zh:'Gosen  Roots XF 100 炫風', brand:'Gosen ', sport:'badminton', category:'rackets', price:680, colors:['red', 'black'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G6', balance:'2'}, stock:1},
+{ id:'pBR013', slug:'PROKENNEX Arrow 17 Air', title_en:'PROKENNEX Arrow 17 Air', title_zh:'PROKENNEX Arrow 17 Air', brand:'PROKENNEX', sport:'badminton', category:'rackets', price:610, colors:['red'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'/', weight_class_u:'7U', grip_class_g:'G5'}, stock:1},
+{ id:'pBR014', slug:'Yonex ArcSaber 11 Play', title_en:'Yonex ArcSaber 11 Play', title_zh:'Yonex ArcSaber 11 Play', brand:'Yonex', sport:'badminton', category:'rackets', price:640, colors:['red', 'black'], specs:{recommended_tension_lbs_max:'27', recommended_tension_lbs_min:'19', weight_class_u:'4U', grip_class_g:'G5', balance:'3 - Even Balanced', stiffness:'全面'}, stock:1},
+{ id:'pBR015', slug:'Yonex Voltric Lite 47i', title_en:'Yonex Voltric Lite 47i', title_zh:'Yonex Voltric Lite 47i', brand:'Yonex', sport:'badminton', category:'rackets', price:570, colors:['blue', 'black'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'20', weight_class_u:'5U', grip_class_g:'G5', stiffness:'進攻'}, stock:1},
+{ id:'pBR016', slug:'Yonex ArcSaber 73 Light DARK BLUE', title_en:'Yonex ArcSaber 73 Light DARK BLUE', title_zh:'Yonex ArcSaber 73 Light DARK BLUE', brand:'Yonex', sport:'badminton', category:'rackets', price:570, colors:['blue', 'black'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'20', weight_class_u:'5U', grip_class_g:'G5', stiffness:'全面'}, stock:1},
+{ id:'pBR017', slug:'Yonex ArcSaber 73 Light TURQUOISE', title_en:'Yonex ArcSaber 73 Light TURQUOISE', title_zh:'Yonex ArcSaber 73 Light TURQUOISE', brand:'Yonex', sport:'badminton', category:'rackets', price:570, colors:['turquoise'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'/', weight_class_u:'5U', grip_class_g:'G5', stiffness:'全面'}, stock:1},
+{ id:'pBR018', slug:'Yonex Astrox 99 Play', title_en:'Yonex Astrox 99 Play', title_zh:'Yonex Astrox 99 Play', brand:'Yonex', sport:'badminton', category:'rackets', price:640, colors:['black', 'green'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', weight_class_u:'4U', grip_class_g:'G5', balance:'1 - Head Heavy', stiffness:'進攻'}, stock:1},
+{ id:'pBR019', slug:'Yonex Astrox 77 Play', title_en:'Yonex Astrox 77 Play', title_zh:'Yonex Astrox 77 Play', brand:'Yonex', sport:'badminton', category:'rackets', price:570, colors:['orange', 'black'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', weight_class_u:'4U', grip_class_g:'G5', balance:'1 - Head Heavy', stiffness:'進攻'}, stock:1},
+{ id:'pBR020', slug:'Yonex Nanoflare 1 Feel', title_en:'Yonex Nanoflare 1 Feel', title_zh:'Yonex Nanoflare 1 Feel', brand:'Yonex', sport:'badminton', category:'rackets', price:610, colors:['cyan', 'green'], specs:{recommended_tension_lbs_max:'27', recommended_tension_lbs_min:'20', weight_class_u:'5U', grip_class_g:'G5', balance:'5 - Head Light ', stiffness:'靈巧'}, stock:1},
+{ id:'pBR021', slug:'Yonex ArcSaber 73 Light AQUA BLUE', title_en:'Yonex ArcSaber 73 Light AQUA BLUE', title_zh:'Yonex ArcSaber 73 Light AQUA BLUE', brand:'Yonex', sport:'badminton', category:'rackets', price:570, colors:['blue'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'20', weight_class_u:'5U', grip_class_g:'G5', stiffness:'全面'}, stock:1},
+{ id:'pBR022', slug:'PROKENNEX Viper 47 Speed', title_en:'PROKENNEX Viper 47 Speed', title_zh:'PROKENNEX Viper 47 Speed', brand:'PROKENNEX', sport:'badminton', category:'rackets', price:590, colors:['cyan'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'22', weight_class_u:'4U', grip_class_g:'G2'}, stock:1},
+{ id:'pBR023', slug:'DUNLOP Omni-Star 85 Head-light', title_en:'DUNLOP Omni-Star 85 Head-light', title_zh:'DUNLOP Omni-Star 85 Head-light', brand:'DUNLOP', sport:'badminton', category:'rackets', price:530, colors:['blue'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'/', weight_class_u:'4U', balance:'1 - Head Heavy'}, stock:1},
+{ id:'pBR024', slug:'Victor Thruster HMR Pro U', title_en:'Victor Thruster HMR Pro U', title_zh:'Victor Thruster HMR Pro U', brand:'Victor', sport:'badminton', category:'rackets', price:640, colors:['blue', 'black'], specs:{recommended_tension_lbs_max:'32', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', stiffness:'進攻'}, stock:1},
+{ id:'pBR025', slug:'Yonex Nanoflare 1 Ability', title_en:'Yonex Nanoflare 1 Ability', title_zh:'Yonex Nanoflare 1 Ability', brand:'Yonex', sport:'badminton', category:'rackets', price:610, colors:['red'], specs:{recommended_tension_lbs_max:'27', recommended_tension_lbs_min:'20', weight_class_u:'5U', grip_class_g:'G5', balance:'5 - Head Light ', stiffness:'靈巧'}, stock:1},
+{ id:'pBR026', slug:'PROKENNEX Kinetic Extreme Pro', title_en:'PROKENNEX Kinetic Extreme Pro', title_zh:'PROKENNEX Kinetic Extreme Pro', brand:'PROKENNEX', sport:'badminton', category:'rackets', price:900, colors:['red'], specs:{recommended_tension_lbs_max:'32', recommended_tension_lbs_min:'24', weight_class_u:'4U', grip_class_g:'G2'}, stock:1},
+{ id:'pBR027', slug:'Yonex Astrox 99 Play', title_en:'Yonex Astrox 99 Play', title_zh:'Yonex Astrox 99 Play', brand:'Yonex', sport:'badminton', category:'rackets', price:640, colors:['white'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', stiffness:'進攻'}, stock:1},
+{ id:'pBR028', slug:'Yonex Astrox 01 Clear', title_en:'Yonex Astrox 01 Clear', title_zh:'Yonex Astrox 01 Clear', brand:'Yonex', sport:'badminton', category:'rackets', price:610, colors:['blue', 'black'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', stiffness:'進攻'}, stock:1},
+{ id:'pBR029', slug:'Yonex Astrox 01 ability', title_en:'Yonex Astrox 01 ability', title_zh:'Yonex Astrox 01 ability', brand:'Yonex', sport:'badminton', category:'rackets', price:610, colors:['red'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', weight_class_u:'4U', grip_class_g:'G5', balance:'1 - Head Heavy', stiffness:'進攻'}, stock:1},
+{ id:'pBR030', slug:'Yonex Nanoflare 70', title_en:'Yonex Nanoflare 70', title_zh:'Yonex Nanoflare 70', brand:'Yonex', sport:'badminton', category:'rackets', price:1640, colors:['pink', 'white'], specs:{recommended_tension_lbs_max:'26', recommended_tension_lbs_min:'18', weight_class_u:'4U', grip_class_g:'G5', stiffness:'靈巧'}, stock:1},
+{ id:'pBR031', slug:'Yonex Nanoflare Nextage', title_en:'Yonex Nanoflare Nextage', title_zh:'Yonex Nanoflare Nextage', brand:'Yonex', sport:'badminton', category:'rackets', price:1050, colors:['silver'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', weight_class_u:'4U', grip_class_g:'G5', stiffness:'靈巧'}, stock:1},
+{ id:'pBR032', slug:'Yonex Nanoflare 1000Z', title_en:'Yonex Nanoflare 1000Z', title_zh:'Yonex Nanoflare 1000Z', brand:'Yonex', sport:'badminton', category:'rackets', price:1860, colors:['yellow', 'black'], specs:{recommended_tension_lbs_max:'26', recommended_tension_lbs_min:'20', weight_class_u:'4U', grip_class_g:'G5', stiffness:'靈巧'}, stock:1},
+{ id:'pBR033', slug:'Yonex Astrox 77 pro', title_en:'Yonex Astrox 77 pro', title_zh:'Yonex Astrox 77 pro', brand:'Yonex', sport:'badminton', category:'rackets', price:1820, colors:['orange', 'black'], specs:{recommended_tension_lbs_max:'29', recommended_tension_lbs_min:'21', weight_class_u:'3U', grip_class_g:'G5', stiffness:'進攻'}, stock:1},
+{ id:'pBR034', slug:'Yonex Astrox 88 S', title_en:'Yonex Astrox 88 S', title_zh:'Yonex Astrox 88 S', brand:'Yonex', sport:'badminton', category:'rackets', price:1970, colors:['silver', 'black'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', weight_class_u:'4U', grip_class_g:'G5', stiffness:'進攻'}, stock:1},
+{ id:'pBR035', slug:'Yonex ArcSaber 11 pro', title_en:'Yonex ArcSaber 11 pro', title_zh:'Yonex ArcSaber 11 pro', brand:'Yonex', sport:'badminton', category:'rackets', price:1970, colors:['red', 'silver'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', weight_class_u:'3U', grip_class_g:'G5', stiffness:'全面'}, stock:1},
+//{ id:'pBR036', slug:'Yonex Nanoflare 700 pro', title_en:'Yonex Nanoflare 700 pro', title_zh:'Yonex Nanoflare 700 pro', brand:'Yonex', sport:'badminton', category:'rackets', price:1820, colors:['purple'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'20', weight_class_u:'4U', grip_class_g:'G5', stiffness:'靈巧'}, stock:1},
+{ id:'pBR037', slug:'Yonex Astrox 88D pro', title_en:'Yonex Astrox 88D pro', title_zh:'Yonex Astrox 88D pro', brand:'Yonex', sport:'badminton', category:'rackets', price:1890, colors:['black', 'silver'], specs:{recommended_tension_lbs_max:'29', recommended_tension_lbs_min:'21', weight_class_u:'3U', grip_class_g:'G5', stiffness:'進攻'}, stock:1},
+{ id:'pBR038', slug:'Mizuno Fortius 11 power', title_en:'Mizuno Fortius 11 power', title_zh:'Mizuno Fortius 11 power', brand:'Mizuno', sport:'badminton', category:'rackets', price:1380, colors:['black'], specs:{recommended_tension_lbs_max:'29', recommended_tension_lbs_min:'22', weight_class_u:'4U', grip_class_g:'G6', stiffness:'進攻'}, stock:1},
+{ id:'pBR039', slug:'Mizuno Fortius 11 quick', title_en:'Mizuno Fortius 11 quick', title_zh:'Mizuno Fortius 11 quick', brand:'Mizuno', sport:'badminton', category:'rackets', price:1380, colors:['black'], specs:{recommended_tension_lbs_max:'29', recommended_tension_lbs_min:'22', weight_class_u:'4U', grip_class_g:'G6', stiffness:'靈巧'}, stock:1},
+{ id:'pBR040', slug:'Mizuno Fortius 10', title_en:'Mizuno Fortius 10', title_zh:'Mizuno Fortius 10', brand:'Mizuno', sport:'badminton', category:'rackets', price:1600, colors:['black'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'23', weight_class_u:'4U', grip_class_g:'G6', stiffness:'靈巧'}, stock:1},
+{ id:'pBR041', slug:'Mizuno AcroSpeed 1 drive', title_en:'Mizuno AcroSpeed 1 drive', title_zh:'Mizuno AcroSpeed 1 drive', brand:'Mizuno', sport:'badminton', category:'rackets', price:1380, colors:['blue', 'black'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'22', weight_class_u:'4U', grip_class_g:'G6'}, stock:1},
+{ id:'pBR042', slug:'Mizuno Altius 01 feel', title_en:'Mizuno Altius 01 feel', title_zh:'Mizuno Altius 01 feel', brand:'Mizuno', sport:'badminton', category:'rackets', price:1380, colors:['blue', 'white'], specs:{recommended_tension_lbs_max:'27', recommended_tension_lbs_min:'23', weight_class_u:'3U', grip_class_g:'G5', balance:'3 - Even Balanced', stiffness:'全面'}, stock:1},
+{ id:'pBR043', slug:'Mizuno Altius 01 speed', title_en:'Mizuno Altius 01 speed', title_zh:'Mizuno Altius 01 speed', brand:'Mizuno', sport:'badminton', category:'rackets', price:1380, colors:['blue', 'white'], specs:{recommended_tension_lbs_max:'27', recommended_tension_lbs_min:'23', weight_class_u:'4U', grip_class_g:'G5', balance:'3 - Even Balanced', stiffness:'靈巧'}, stock:1},
+{ id:'pBR044', slug:'Mizuno AcroSpeed 6 WHITE', title_en:'Mizuno AcroSpeed 6 WHITE', title_zh:'Mizuno AcroSpeed 6 WHITE', brand:'Mizuno', sport:'badminton', category:'rackets', price:1100, colors:['white'], specs:{recommended_tension_lbs_max:'25', recommended_tension_lbs_min:'19', weight_class_u:'4U', grip_class_g:'G6', balance:'4'}, stock:1},
+{ id:'pBR045', slug:'Mizuno AcroSpeed 6 BLACK', title_en:'Mizuno AcroSpeed 6 BLACK', title_zh:'Mizuno AcroSpeed 6 BLACK', brand:'Mizuno', sport:'badminton', category:'rackets', price:1100, colors:['black'], specs:{recommended_tension_lbs_max:'25', recommended_tension_lbs_min:'19', weight_class_u:'4U', grip_class_g:'G6', balance:'4'}, stock:1},
+{ id:'pBR046', slug:'Mizuno AcroSpeed 0', title_en:'Mizuno AcroSpeed 0', title_zh:'Mizuno AcroSpeed 0', brand:'Mizuno', sport:'badminton', category:'rackets', price:1530, colors:['black'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'22', weight_class_u:'4U', grip_class_g:'G6', balance:'2'}, stock:1},
+{ id:'pBR047', slug:'Victor DriveX phecoa', title_en:'Victor DriveX phecoa', title_zh:'Victor DriveX phecoa', brand:'Victor', sport:'badminton', category:'rackets', price:980, colors:['blue', 'white'], specs:{recommended_tension_lbs_max:'29', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/'}, stock:1},
+{ id:'pBR048', slug:'Victor TK 多啦A夢', title_en:'Victor TK 多啦A夢', title_zh:'Victor TK 多啦A夢', brand:'Victor', sport:'badminton', category:'rackets', price:870, colors:['blue', 'silver'], specs:{recommended_tension_lbs_max:'35', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G6', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR049', slug:'Victor TK 龍珠', title_en:'Victor TK 龍珠', title_zh:'Victor TK 龍珠', brand:'Victor', sport:'badminton', category:'rackets', price:1200, colors:['black', 'green'], specs:{recommended_tension_lbs_max:'31', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR050', slug:'Victor TK Raptor', title_en:'Victor TK Raptor', title_zh:'Victor TK Raptor', brand:'Victor', sport:'badminton', category:'rackets', price:1200, colors:['yellow', 'black'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR051', slug:'Victor Ryuga Metallic', title_en:'Victor Ryuga Metallic', title_zh:'Victor Ryuga Metallic', brand:'Victor', sport:'badminton', category:'rackets', price:1600, colors:['black', 'white'], specs:{recommended_tension_lbs_max:'31', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/'}, stock:1},
+/*
+{ id:'pBR052', slug:'Victor TK 超人迪加', title_en:'Victor TK 超人迪加', title_zh:'Victor TK 超人迪加', brand:'Victor', sport:'badminton', category:'rackets', price:880, colors:['blue', 'white'], specs:{recommended_tension_lbs_max:'29', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR053', slug:'Victor Brave Sword LTD Pro', title_en:'Victor Brave Sword LTD Pro', title_zh:'Victor Brave Sword LTD Pro', brand:'Victor', sport:'badminton', category:'rackets', price:1380, colors:['red', 'white'], specs:{recommended_tension_lbs_max:'26', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/'}, stock:1},
+{ id:'pBR054', slug:'Victor Thruster F Ultra', title_en:'Victor Thruster F Ultra', title_zh:'Victor Thruster F Ultra', brand:'Victor', sport:'badminton', category:'rackets', price:1530, colors:['black', 'orange'], specs:{recommended_tension_lbs_max:'32', recommended_tension_lbs_min:'/', weight_class_u:'3U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR055', slug:'Victor Thruster TTY Ultima', title_en:'Victor Thruster TTY Ultima', title_zh:'Victor Thruster TTY Ultima', brand:'Victor', sport:'badminton', category:'rackets', price:1600, colors:['white'], specs:{recommended_tension_lbs_max:'31', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR056', slug:'Victor Thruster K Onigiri Pro', title_en:'Victor Thruster K Onigiri Pro', title_zh:'Victor Thruster K Onigiri Pro', brand:'Victor', sport:'badminton', category:'rackets', price:1420, colors:['turquoise', 'black'], specs:{recommended_tension_lbs_max:'27', recommended_tension_lbs_min:'/', weight_class_u:'5U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR057', slug:'Victor Thruster F ', title_en:'Victor Thruster F ', title_zh:'Victor Thruster F ', brand:'Victor', sport:'badminton', category:'rackets', price:1530, colors:['brown', 'black'], specs:{recommended_tension_lbs_max:'31', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR058', slug:'Victor Thruster Hawk Pro S', title_en:'Victor Thruster Hawk Pro S', title_zh:'Victor Thruster Hawk Pro S', brand:'Victor', sport:'badminton', category:'rackets', price:980, colors:['silver', 'blue'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR059', slug:'Victor Thruster  Ryuga II Pro ', title_en:'Victor Thruster  Ryuga II Pro ', title_zh:'Victor Thruster  Ryuga II Pro ', brand:'Victor', sport:'badminton', category:'rackets', price:1600, colors:['black', 'turquoise'], specs:{recommended_tension_lbs_max:'30', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR060', slug:'Victor Thruster  HMRL Chocolate ', title_en:'Victor Thruster  HMRL Chocolate ', title_zh:'Victor Thruster  HMRL Chocolate ', brand:'Victor', sport:'badminton', category:'rackets', price:610, colors:['brown', 'black', 'yellow'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'/', weight_class_u:'5U', grip_class_g:'G5', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR061', slug:'Victor AuraSpeed  100X', title_en:'Victor AuraSpeed  100X', title_zh:'Victor AuraSpeed  100X', brand:'Victor', sport:'badminton', category:'rackets', price:1530, colors:['orange', 'black', 'white'], specs:{recommended_tension_lbs_max:'29', recommended_tension_lbs_min:'/', weight_class_u:'3U', grip_class_g:'G5', balance:'/'}, stock:1},
+{ id:'pBR062', slug:'Victor Fantome 影刃   ', title_en:'Victor Fantome 影刃   ', title_zh:'Victor Fantome 影刃   ', brand:'Victor', sport:'badminton', category:'rackets', price:1600, colors:['purple', 'black'], specs:{recommended_tension_lbs_max:'29', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/'}, stock:1},
+{ id:'pBR063', slug:'Victor AuraSpeed SYN / Sliver ', title_en:'Victor AuraSpeed SYN / Sliver ', title_zh:'Victor AuraSpeed SYN / Sliver ', brand:'Victor', sport:'badminton', category:'rackets', price:1090, colors:['silver'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/'}, stock:1},
+{ id:'pBR064', slug:'Victor Thruster Ryuga II Pro 葡萄紫', title_en:'Victor Thruster Ryuga II Pro 葡萄紫', title_zh:'Victor Thruster Ryuga II Pro 葡萄紫', brand:'Victor', sport:'badminton', category:'rackets', price:1710, colors:['purple'], specs:{recommended_tension_lbs_max:'31', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G6', balance:'/', stiffness:'進攻'}, stock:1},
+{ id:'pBR065', slug:'Victor Ironman Metallic', title_en:'Victor Ironman Metallic', title_zh:'Victor Ironman Metallic', brand:'Victor', sport:'badminton', category:'rackets', price:1650, colors:['red', 'black'], specs:{recommended_tension_lbs_max:'28', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G5', balance:'/'}, stock:1},
+{ id:'pBR066', slug:'Victor Thruster K 220H ll', title_en:'Victor Thruster K 220H ll', title_zh:'Victor Thruster K 220H ll', brand:'Victor', sport:'badminton', category:'rackets', price:830, colors:['blue', 'white'], specs:{recommended_tension_lbs_max:'35', recommended_tension_lbs_min:'/', weight_class_u:'4U', grip_class_g:'G6', balance:'/'}, stock:1},
+*/
+
+
+{ id:'pTB001', slug:'KANNON TOUR BLACK EDITION PREMIUM TENNIS BALLS', title_en:'Kanon 泰國製 Tour 4balls', title_zh:'Kanon 泰國製 Tour 4balls', brand:'Kanon', sport:'tennis', category:'balls', price:60,specs:{}, stock:1},
+{ id:'pTB002', slug:'Prince NX Tour Pro Tennis Ball 3-ball Can', title_en:'Prince NX Tour TennisBalls', title_zh:'Prince NX Tour TennisBalls', brand:'Prince', sport:'tennis', category:'balls', price:40,specs:{}, stock:1},
+{ id:'pTB003', slug:'DUNLOP OFFICIAL ATP TENNIS BALL [3 BALL TIN]', title_en:'DUNLOP ATP Tennis Balls', title_zh:'DUNLOP ATP Tennis Balls', brand:'DUNLOP', sport:'tennis', category:'balls', price:50,specs:{}, stock:1},
+{ id:'pTB004', slug:'Wilson Tour Premier All Court 3 Ball can', title_en:'Wilson Tour Premier Tennis Balls', title_zh:'Wilson Tour Premier Tennis Balls', brand:'Wilson', sport:'tennis', category:'balls', price:50,specs:{}, stock:1},
+{ id:'pTB005', slug:'Slazenger The Wimbledon Tennis Ball', title_en:'Slazenger Wimbledon Tennis Balls', title_zh:'Slazenger Wimbledon Tennis Balls', brand:'Slazenger', sport:'tennis', category:'balls', price:60,specs:{}, stock:1},
+{ id:'pTB006', slug:'FORT ALL COURT', title_en:'DUNLOP Fort all court', title_zh:'DUNLOP Fort all court', brand:'DUNLOP', sport:'tennis', category:'balls', price:40,specs:{}, stock:1},
+{ id:'pTB007', slug:'HEAD TOUR XT 4 Tennis Balls Single Can', title_en:'HEAD Tour XT (4-Ball) Tennis Ball', title_zh:'HEAD Tour XT (4-Ball) Tennis Ball', brand:'HEAD', sport:'tennis', category:'balls', price:60,specs:{}, stock:1},
+{ id:'pTB008', slug:'Head Tour XT Tennis Balls', title_en:'HEAD Tour XT Tennis Ball', title_zh:'HEAD Tour XT Tennis Ball', brand:'HEAD', sport:'tennis', category:'balls', price:40,specs:{}, stock:1},
+{ id:'pTB009', slug:'HEAD - Tour Tennis Ball', title_en:'HEAD Tour Tennis Ball', title_zh:'HEAD Tour Tennis Ball', brand:'HEAD', sport:'tennis', category:'balls', price:40,specs:{}, stock:1},
+{ id:'pTB010', slug:'SLAZENGER CHAMPIONSHIP HYDROGUARD TENNIS BALLS', title_en:'Slazenger Championship TennisBalls', title_zh:'Slazenger Championship TennisBalls', brand:'Slazenger', sport:'tennis', category:'balls', price:50,specs:{}, stock:1},
+//{ id:'pTB011', slug:'', title_en:'DUNLOP A.O. Tennis Balls', title_zh:'DUNLOP A.O. Tennis Balls', brand:'DUNLOP', sport:'tennis', category:'balls', price:50,specs:{}, stock:1},
+{ id:'pTB012', slug:'HEAD T.I.P. Red 3 Tennis Balls Single Can', title_en:'HEAD T.I.P. 低壓網球 紅波 5-8yr', title_zh:'HEAD T.I.P. 低壓網球 紅波 5-8yr', brand:'HEAD', sport:'tennis', category:'balls', price:40,specs:{}, stock:1},
+{ id:'pTB013', slug:'HEAD T.I.P. Orgran 3 Tennis Balls Single Can', title_en:'HEAD T.I.P. 低壓網球 橙波 8-9yr', title_zh:'HEAD T.I.P. 低壓網球 橙波 8-9yr', brand:'HEAD', sport:'tennis', category:'balls', price:40,specs:{}, stock:1},
+{ id:'pTB014', slug:'HEAD T.I.P. Green 3 Tennis Balls Single Can', title_en:'HEAD T.I.P. 低壓網球 綠波 9-10yr', title_zh:'HEAD T.I.P. 低壓網球 綠波 9-10yr', brand:'HEAD', sport:'tennis', category:'balls', price:40,specs:{}, stock:1},
+
+
+{ id:'pS001', slug:'航空牌 Green (G1130)', title_en:'航空牌 Green (G1130)', title_zh:'航空牌 Green (G1130)', brand:'航空牌', sport:'badminton', category:'balls', price:280, specs:{}, stock:1},
+{ id:'pS002', slug:'航空牌 Red 圓尾or尖尾 (SG1130)', title_en:'航空牌 Red 圓尾or尖尾 (SG1130)', title_zh:'航空牌 Red 圓尾or尖尾 (SG1130)', brand:'航空牌', sport:'badminton', category:'balls', price:290, specs:{}, stock:1},
+{ id:'pS003', slug:'航空牌 Black 圓尾or尖尾 (EG1101)', title_en:'航空牌 Black 圓尾or尖尾 (EG1101)', title_zh:'航空牌 Black 圓尾or尖尾 (EG1101)', brand:'航空牌', sport:'badminton', category:'balls', price:310, specs:{}, stock:1},
+{ id:'pS004', slug:'雪峰牌 SP808', title_en:'雪峰牌 SP808', title_zh:'雪峰牌 SP808', brand:'雪峰牌', sport:'badminton', category:'balls', price:230, specs:{}, stock:1},
+{ id:'pS005', slug:'雪峰牌 二級 (C1136)', title_en:'雪峰牌 二級 (C1136)', title_zh:'雪峰牌 二級 (C1136)', brand:'雪峰牌', sport:'badminton', category:'balls', price:240, specs:{}, stock:1},
+{ id:'pS006', slug:'雪峰牌 一級 (C1130)', title_en:'雪峰牌 一級 (C1130)', title_zh:'雪峰牌 一級 (C1130)', brand:'雪峰牌', sport:'badminton', category:'balls', price:250, specs:{}, stock:1},
+{ id:'pS007', slug:'雪峰牌 特級 (藍筒)', title_en:'雪峰牌 特級 (藍筒)', title_zh:'雪峰牌 特級 (藍筒)', brand:'雪峰牌', sport:'badminton', category:'balls', price:270, specs:{}, stock:1},
+{ id:'pS008', slug:'C.N. Alpha Green', title_en:'C.N. Alpha Green', title_zh:'C.N. Alpha Green', brand:'C.N. Alpha', sport:'badminton', category:'balls', price:130, specs:{}, stock:1},
+{ id:'pS009', slug:'C.N. Alpha Orange', title_en:'C.N. Alpha Orange', title_zh:'C.N. Alpha Orange', brand:'C.N. Alpha', sport:'badminton', category:'balls', price:160, specs:{}, stock:1},
+{ id:'pS010', slug:'C.N. Alpha Blue', title_en:'C.N. Alpha Blue', title_zh:'C.N. Alpha Blue', brand:'C.N. Alpha', sport:'badminton', category:'balls', price:170, specs:{}, stock:1},
+{ id:'pS011', slug:'C.N. Alpha Gold', title_en:'C.N. Alpha Gold', title_zh:'C.N. Alpha Gold', brand:'C.N. Alpha', sport:'badminton', category:'balls', price:230, specs:{}, stock:1},
+{ id:'pS012', slug:'C.N. Alpha Deluxe Gold', title_en:'C.N. Alpha Deluxe Gold', title_zh:'C.N. Alpha Deluxe Gold', brand:'C.N. Alpha', sport:'badminton', category:'balls', price:260, specs:{}, stock:1},
+{ id:'pS013', slug:'R.S.L. No.10 Tourney', title_en:'R.S.L. No.10 Tourney', title_zh:'R.S.L. No.10 Tourney', brand:'R.S.L.', sport:'badminton', category:'balls', price:130, specs:{}, stock:1},
+{ id:'pS014', slug:'R.S.L. No.7 Tourney', title_en:'R.S.L. No.7 Tourney', title_zh:'R.S.L. No.7 Tourney', brand:'R.S.L.', sport:'badminton', category:'balls', price:170, specs:{}, stock:1},
+{ id:'pS015', slug:'R.S.L. No.6 Tourney', title_en:'R.S.L. No.6 Tourney', title_zh:'R.S.L. No.6 Tourney', brand:'R.S.L.', sport:'badminton', category:'balls', price:170, specs:{}, stock:1},
+{ id:'pS016', slug:'R.S.L. A9', title_en:'R.S.L. A9', title_zh:'R.S.L. A9', brand:'R.S.L.', sport:'badminton', category:'balls', price:190, specs:{}, stock:1},
+{ id:'pS017', slug:'R.S.L. No.5 Tourney', title_en:'R.S.L. No.5 Tourney', title_zh:'R.S.L. No.5 Tourney', brand:'R.S.L.', sport:'badminton', category:'balls', price:190, specs:{}, stock:1},
+{ id:'pS018', slug:'R.S.L. No.4 Tourney', title_en:'R.S.L. No.4 Tourney', title_zh:'R.S.L. No.4 Tourney', brand:'R.S.L.', sport:'badminton', category:'balls', price:200, specs:{}, stock:1},
+{ id:'pS019', slug:'R.S.L. Official', title_en:'R.S.L. Official', title_zh:'R.S.L. Official', brand:'R.S.L.', sport:'badminton', category:'balls', price:210, specs:{}, stock:1},
+{ id:'pS020', slug:'R.S.L. No.3 Tourney', title_en:'R.S.L. No.3 Tourney', title_zh:'R.S.L. No.3 Tourney', brand:'R.S.L.', sport:'badminton', category:'balls', price:210, specs:{}, stock:1},
+{ id:'pS021', slug:'R.S.L. Tourney No.1', title_en:'R.S.L. Tourney No.1', title_zh:'R.S.L. Tourney No.1', brand:'R.S.L.', sport:'badminton', category:'balls', price:220, specs:{}, stock:1},
+{ id:'pS022', slug:'R.S.L. Classic Tourney', title_en:'R.S.L. Classic Tourney', title_zh:'R.S.L. Classic Tourney', brand:'R.S.L.', sport:'badminton', category:'balls', price:240, specs:{}, stock:1},
+{ id:'pS023', slug:'R.S.L. Supreme', title_en:'R.S.L. Supreme', title_zh:'R.S.L. Supreme', brand:'R.S.L.', sport:'badminton', category:'balls', price:260, specs:{}, stock:1},
+{ id:'pS024', slug:'R.S.L. Ultimate', title_en:'R.S.L. Ultimate', title_zh:'R.S.L. Ultimate', brand:'R.S.L.', sport:'badminton', category:'balls', price:270, specs:{}, stock:1},
+{ id:'pS025', slug:'VICTOR Gold', title_en:'VICTOR Gold', title_zh:'VICTOR Gold', brand:'VICTOR', sport:'badminton', category:'balls', price:170, specs:{}, stock:1},
+{ id:'pS026', slug:'VICTOR Master No.5', title_en:'VICTOR Master No.5', title_zh:'VICTOR Master No.5', brand:'VICTOR', sport:'badminton', category:'balls', price:220, specs:{}, stock:1},
+{ id:'pS027', slug:'VICTOR Champion No.1', title_en:'VICTOR Champion No.1', title_zh:'VICTOR Champion No.1', brand:'VICTOR', sport:'badminton', category:'balls', price:230, specs:{}, stock:1},
+{ id:'pS028', slug:'VICTOR Master No.3', title_en:'VICTOR Master No.3', title_zh:'VICTOR Master No.3', brand:'VICTOR', sport:'badminton', category:'balls', price:240, specs:{}, stock:1},
+{ id:'pS029', slug:'VICTOR Master ACE', title_en:'VICTOR Master ACE', title_zh:'VICTOR Master ACE', brand:'VICTOR', sport:'badminton', category:'balls', price:280, specs:{}, stock:1},
+
+];
+
+  /********************* State & Utils *********************/
+  // Safe storage (won't crash in iOS Private Mode / strict in-app browsers)
+const storage = {
+  get(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  },
+  set(key, val) {
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+    } catch (e) {
+      /* ignore – fallback to memory only */
+    }
+  }
+};
+
+const App = {
+  route: '/',
+  query: '',
+  lang: 'en',
+  cart: storage.get('wb:cart', []),
+  filters: {},
+  setCart(next) {
+    this.cart = next;
+    storage.set('wb:cart', next);
+    UI.updateCartIcon();
+  },
+};
+
+  const HK = n => 'HK$'+Number(n).toLocaleString();
+  const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+
+  function navigate(path, q){
+    const qs = q && Object.keys(q).length ? '?' + new URLSearchParams(q).toString() : '';
+    location.hash = path + qs;
+  }
+  function getRoute(){
+    const raw = location.hash.replace('#','') || '/';
+    const [base, query] = raw.split('?');
+    App.route = base;
+    App.query = query ? decodeURIComponent((new URLSearchParams(query)).get('q')||'') : '';
+  }
+
+  /********************* UI Rendering *********************/
+  const Root = document.getElementById('appRoot');
+
+  const UI = {
+
+    render(){
+      getRoute();
+      const r = App.route;
+      if(r === '/') this.home();
+      else if(r === '/products') this.products();
+      else if(r === '/brands') this.brands();
+      else if(r === '/stringing') this.stringing();
+      else if(r === '/about') this.about();
+      else if(r === '/contact') this.contact();
+      else if(r === '/cart') this.cart();
+      else if(r === '/search') this.search();
+      else this.home();
+  
+    },
+
+    home(){
+      Root.innerHTML = `
+        <section class="space-y-8">
+          <div class="rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-8 flex flex-col md:flex-row items-center gap-6">
+            <div class="flex-1">
+              <h1 class="text-2xl md:text-4xl font-extrabold mb-2">Game, Set, Winboton.</h1>
+              <p class="opacity-90">Your neighborhood hub for tennis, badminton, fitness & more—professional stringing, expert advice, and the gear you love.</p>
+              <div class="mt-4 flex gap-3">
+                <a href="#/products" class="px-4 py-2 rounded-full bg-white text-gray-900 font-medium">Shop Now</a>
+                <a href="#/stringing" class="px-4 py-2 rounded-full border border-white text-white">Stringing Service</a>
+              </div>
+            </div>
+            <div class="w-full md:w-96 aspect-[4/3] bg-white/10 rounded-xl flex items-center justify-center">
+              <span class="opacity-80 text-sm">Hero Image Placeholder</span>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-xl font-bold mb-3">Shop by Sport</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              ${['Tennis','Badminton','Fitness','Other'].map(label=>`
+                <a href="#/products" class="rounded-xl border p-6 hover:shadow">
+                  <div class="aspect-video bg-gray-100 rounded mb-3 flex items-center justify-center text-sm">${label} Image</div>
+                  <div class="font-medium">${label}</div>
+                  <div class="text-xs text-gray-500">Explore products</div>
+                </a>`).join('')}
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-xl font-bold mb-3">Featured Brands</h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+              ${BRANDS.map(b=>`
+                <div class="rounded-xl border p-4 flex flex-col items-center text-center gap-2">
+                  <div class="w-24 h-12 bg-gray-100 rounded flex items-center justify-center">Logo</div>
+                  <div class="font-semibold">${b.name}</div>
+                  <div class="text-xs text-gray-500">${b.blurb}</div>
+                </div>`).join('')}
+            </div>
+          </div>
+
+          <div class="rounded-xl border p-5 flex flex-col md:flex-row gap-5 items-center">
+            <div class="flex-1">
+              <h3 class="text-lg font-bold mb-1">Professional Stringing Service</h3>
+              <p class="text-sm text-gray-600 mb-3">Drop off in-store or schedule courier pickup. Choose string, gauge, and tension—get match-ready fast!</p>
+              <a href="#/stringing" class="px-4 py-2 rounded-full bg-indigo-600 text-white text-sm">Book Now</a>
+            </div>
+            <div class="w-full md:w-80 aspect-video bg-gray-100 rounded flex items-center justify-center">Stringing Image</div>
+          </div>
+        </section>`;
+    },
+
+    products(){
+      const grid = (items)=> items.map(p=>`
+        <div class="rounded-xl border bg-white overflow-hidden group">
+          <button onclick="UI.openPDP('${p.id}')" class="block w-full text-left">
+            <div class="aspect-square bg-gray-100 flex items-center justify-center"><span class="text-xs text-gray-500">
+              <img src="images/products/${p.slug}.png" alt=${p.slug} class="max-h-full max-w-full object-contain"/>
+              </span></div>
+            <div class="p-3">
+              <div class="text-xs text-gray-500 mb-1">${p.brand} • ${cap(p.category)}</div>
+              <div class="font-semibold leading-tight mb-1 line-clamp-2">${p.title_en}</div>
+              <div class="text-sm font-bold">${HK(p.price)}</div>
+              ${p.colors?`<div class="flex gap-1 mt-2">${p.colors.slice(0,4).map(c=>`<span title="${c}" class="w-3 h-3 rounded-full border" style="background:${c}"></span>`).join('')}</div>`:''}
+              ${p.badges?`<div class="mt-2 flex gap-1 flex-wrap">${p.badges.map(b=>`<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">${cap(b)}</span>`).join('')}</div>`:''}
+            </div>
+          </button>
+        </div>`).join('');
+
+      const allBrands = [...new Set(PRODUCTS.map(p=>p.brand))].sort();
+      const allColors = [...new Set(PRODUCTS.flatMap(p=>p.colors||[]))].sort();
+      const allSports = [...new Set(PRODUCTS.map(p=>p.sport))].sort();
+      const allCategories = [...new Set(PRODUCTS.map(p=>p.category))].sort();
+
+      // Apply filters
+      const f = App.filters;
+      let list = PRODUCTS.filter(p=>{
+        if(f.sport?.length && !f.sport.includes(p.sport)) return false;
+        if(f.category?.length && !f.category.includes(p.category)) return false;
+        if(f.brand?.length && !f.brand.includes(p.brand)) return false;
+        if(f.color?.length){ const ov = (p.colors||[]).some(c=>f.color.includes(c)); if(!ov) return false; }
+
+        if(f.weight_class_u?.length){ const wc = p.specs.weight_class_u; if(!wc || !f.weight_class_u.includes(wc)) return false; }
+        if(f.tension){
+          const [min,max] = f.tension; const rmin = p.specs.recommended_tension_lbs_min??0, rmax=p.specs.recommended_tension_lbs_max??999;
+          if(rmax < min || rmin > max) return false;
+        }
+        if(f.price){ const [min,max]=f.price; if(p.price<min || p.price>max) return false; }
+        return true;
+      });
+
+      // Default sort: Price High -> Low
+      list.sort((a,b)=> (b.price||0) - (a.price||0));
+
+      Root.innerHTML = `
+        <section class="flex flex-col md:flex-row gap-5">
+          <aside class="md:w-64 w-full md:sticky md:top-[68px] md:self-start">
+            <div class="rounded-xl border p-4 space-y-4 bg-white">
+              <button class="w-full text-sm mt-2 px-3 py-2 rounded-lg border" onclick="UI.clearFilters()">Clear Filters</button>
+              ${Facet.checkboxGroup('Sport', allSports, 'sport')}
+              ${Facet.checkboxGroup('Category', allCategories.map(cap), 'category', allCategories)}
+              ${Facet.checkboxGroup('Brand', allBrands, 'brand')}
+              ${Facet.checkboxGroup('Colour', allColors, 'color')}
+              
+              ${Facet.checkboxGroup('Weight Class (U)', ['2U','3U','4U','5U'], 'weight_class_u')}
+              ${Facet.range('Recommended Tension (lbs)', 18, 32, 'tension')}
+              ${Facet.range('Price (HK$)', 0, 3000, 'price', 10)}
+              <button class="w-full text-sm mt-2 px-3 py-2 rounded-lg border" onclick="UI.clearFilters()">Clear Filters</button>
+            </div>
+          </aside>
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-3">
+              <h1 class="text-xl font-bold">All Products</h1>
+              <div class="flex items-center gap-2 text-sm">
+                <label>Sort:</label>
+                <select id="sortSel" class="border rounded px-2 py-1">
+                  <option value="relevance">Relevance</option>
+                  <option value="newest">Newest</option>
+                  <option value="price-asc">Price: Low to High</option>
+                  <option value="price-desc" selected>Price: High to Low</option>
+                </select>
+              </div>
+            </div>
+            <div id="grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">${grid(list)}</div>
+            <div id="nores" class="${list.length? 'hidden':''} col-span-full text-center text-sm text-gray-600 py-12">No products match the current filters.</div>
+          </div>
+        </section>`;
+
+      document.getElementById('sortSel').addEventListener('change', (e)=>{
+        const v = e.target.value; list = [...list];
+        if(v==='price-asc') list.sort((a,b)=>a.price-b.price);
+        if(v==='price-desc') list.sort((a,b)=>b.price-a.price);
+        if(v==='newest') list.sort((a,b)=>(b.badges?.includes('new')?1:0)-(a.badges?.includes('new')?1:0));
+        document.getElementById('grid').innerHTML = grid(list);
+      });
+    },
+
+    /*brands(){
+      Root.innerHTML = `
+        <section class="grid md:grid-cols-4 gap-5">
+          <div class="md:col-span-1">
+            <div class="rounded-xl border bg-white p-4 space-y-2">
+              <div class="font-bold mb-2">Brands</div>
+              <button class="w-full text-left px-3 py-2 rounded bg-gray-100" onclick="UI.setBrand(null)">All Brands</button>
+              ${BRANDS.map(b=>`<button class="w-full text-left px-3 py-2 rounded" onclick="UI.setBrand('${b.name}')">${b.name}</button>`).join('')}
+            </div>
+          </div>
+          <div class="md:col-span-3">
+            <h1 id="brandTitle" class="text-xl font-bold mb-3">All Brands</h1>
+            <div id="brandGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+          </div>
+        </section>`;
+      UI.setBrand(null);
+    },*/
+
+    stringing(){
+      Root.innerHTML = `
+        <section class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h1 class="text-2xl font-extrabold mb-2">Professional Stringing Service</h1>
+            <p class="text-sm text-gray-600 mb-4">Select racket type, string, gauge and preferred tension. Drop-off in-store or arrange courier pickup.</p>
+            <div class="rounded-xl border bg-white p-4 space-y-3">
+              <div class="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">Racket Type</label>
+                  <select id="strType" class="w-full border rounded px-2 py-1"><option value="tennis">Tennis</option><option value="badminton">Badminton</option><option value="squash">Squash</option></select>
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">String model</label>
+                  <input id="strModel" class="w-full border rounded px-2 py-1" placeholder="e.g., BG80 / RPM Blast" />
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">Gauge (mm)</label>
+                  <input id="strGauge" type="number" step="0.01" class="w-full border rounded px-2 py-1" value="1.25" />
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">Tension (lbs)</label>
+                  <input id="strLbs" type="number" class="w-full border rounded px-2 py-1" value="52" />
+                  <div id="strKg" class="text-[11px] text-gray-500 mt-1">≈ ${(52/2.205).toFixed(1)} kg</div>
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">Pattern</label>
+                  <select id="strPattern" class="w-full border rounded px-2 py-1"><option>2-piece</option><option>1-piece</option></select>
+                </div>
+                <label class="flex items-center gap-2 text-sm"><input id="strPre" type="checkbox" class="accent-indigo-600" /> Pre-stretch</label>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">Drop-off Method</label>
+                  <select id="strDrop" class="w-full border rounded px-2 py-1"><option value="in-store">In-store</option><option value="courier">Courier</option></select>
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs text-gray-500 mb-1">Preferred Date & Time</label>
+                  <input id="strDT" type="datetime-local" class="w-full border rounded px-2 py-1" />
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs text-gray-500 mb-1">Notes</label>
+                  <textarea id="strNotes" class="w-full border rounded px-2 py-1" rows="3" placeholder="e.g., Please string by Friday."></textarea>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <button onclick="UI.submitStringing()" class="px-4 py-2 rounded-lg bg-indigo-600 text-white">Book Stringing</button>
+                <a href="#/cart" class="px-4 py-2 rounded-lg border">Go to Cart</a>
+              </div>
+              <div id="strConfirm" class="hidden text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3"></div>
+            </div>
+          </div>
+          <div class="md:pl-6">
+            <div class="aspect-video bg-gray-100 rounded-xl flex items-center justify-center">Stringing banner / video</div>
+            <div class="mt-4 text-sm text-gray-600 space-y-2">
+              <p><strong>Turnaround:</strong> Typically 24–48 hours (in-store). Courier adds 1–2 days.</p>
+              <p><strong>Pricing:</strong> Depends on string model & service options. Ask us for a quote.</p>
+            </div>
+          </div>
+        </section>`;
+      document.getElementById('strLbs').addEventListener('input', e=>{
+        document.getElementById('strKg').textContent = '≈ ' + ( (parseFloat(e.target.value||'0')/2.205).toFixed(1) ) + ' kg';
+      });
+    },
+
+    about(){ Root.innerHTML = `<section class="prose max-w-none"><h1>About Winboton</h1><p>Winboton is your trusted neighborhood sports store for tennis, badminton, fitness, and more. We offer expert advice, quality products, and professional stringing services.</p></section>`; },
+    contact(){ Root.innerHTML = `<section class="grid md:grid-cols-2 gap-6"><div><h1 class="text-2xl font-extrabold mb-2">Contact Us</h1><div class="rounded-xl border bg-white p-4 space-y-3"><div class="grid grid-cols-1 gap-2 text-sm"><input class="border rounded px-2 py-1" placeholder="Full name"/><input class="border rounded px-2 py-1" placeholder="Email"/><input class="border rounded px-2 py-1" placeholder="Phone"/><select class="border rounded px-2 py-1"><option>Sales</option><option>Stringing</option><option>Warranty</option></select><textarea class="border rounded px-2 py-1" rows="4" placeholder="Message"></textarea></div><button class="px-4 py-2 rounded-lg bg-indigo-600 text-white">Send</button></div></div><div class="aspect-video bg-gray-100 rounded-xl overflow-hidden">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d921.8411923472407!2d114.1704329!3d22.4529228!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x34040847cbb420c3%3A0x228b774dac879a5c!2z5rqr5biD6aCT6auU6IKy55So5ZOBIFdpbmJvdG9uIFNwb3J0cyBDby4!5e0!3m2!1szh-CN!2shk!4v1758843383138!5m2!1szh-CN!2shk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></section>`; },
+
+
+    cart(){
+      const items = App.cart;
+      const total = items.reduce((s,it)=>{
+        const p = PRODUCTS.find(x=>x.id===it.productId); if(!p) return s; return s + p.price*it.qty; }, 0);
+      Root.innerHTML = `
+        <section class="grid md:grid-cols-3 gap-6">
+          <div class="md:col-span-2">
+            <h1 class="text-xl font-bold mb-3">Your Cart</h1>
+            <div class="space-y-3" id="cartList">
+              ${items.map((it,i)=>{ const p=PRODUCTS.find(x=>x.id===it.productId);
+                return `<div class="rounded-xl border bg-white p-3 flex gap-3">
+                  <div class="w-24 h-24 bg-gray-100 rounded flex items-center justify-center"><span class="text-xs text-gray-500">Image</span></div>
+                  <div class="flex-1">
+                    <div class="font-semibold">${p.title_en}</div>
+                    <div class="text-xs text-gray-500">${p.brand} • ${cap(p.category)}</div>
+                    ${it.stringing? `<div class=\"text-xs mt-1 p-2 bg-indigo-50 text-indigo-800 rounded\">Stringing: ${it.stringing.string_model||'?'} @ ${it.stringing.tension_lbs||'?'} lbs (${it.stringing.pattern||'2-piece'})</div>`:''}
+                  </div>
+                  <div class="text-right">
+                    <div class="font-bold">${HK(p.price)}</div>
+                    <div class="flex items-center gap-2 justify-end mt-2">
+                      <input type="number" min="1" class="w-16 border rounded px-2 py-1" value="${it.qty}" onchange="UI.q(${i}, this.value)" />
+                      <button onclick="UI.rm(${i})" class="text-sm text-red-600">Remove</button>
+                    </div>
+                  </div>
+                </div>`; }).join('')}
+              ${items.length===0?'<div class="text-sm text-gray-600">Your cart is empty.</div>':''}
+            </div>
+          </div>
+          <div>
+            <div class="rounded-xl border bg-white p-4 space-y-3">
+              <h2 class="font-bold">Quote / Reservation</h2>
+              <div class="flex items-center justify-between text-sm"><span>Subtotal</span><span class="font-bold">${HK(total)}</span></div>
+              <div class="text-xs text-gray-500">Final price may vary based on availability, service options, and pickup/delivery.</div>
+              <div class="h-px bg-gray-200"></div>
+              <div class="grid grid-cols-1 gap-2 text-sm">
+                <input id="qName" class="border rounded px-2 py-1" placeholder="Full name" />
+                <input id="qPhone" class="border rounded px-2 py-1" placeholder="Phone" />
+                <input id="qEmail" class="border rounded px-2 py-1" placeholder="Email" />
+                <select id="qMethod" class="border rounded px-2 py-1"><option value="pickup">In-store pickup</option><option value="courier">Local courier</option></select>
+                <textarea id="qNote" class="border rounded px-2 py-1" rows="3" placeholder="Notes (e.g., need by Friday)"></textarea>
+              </div>
+              <button ${items.length===0?'disabled class="w-full px-4 py-2 rounded-lg text-white bg-gray-400"':'class="w-full px-4 py-2 rounded-lg text-white bg-indigo-600 hover:opacity-95"'} onclick="UI.sendWhatsAppQuote()">Send to WhatsApp</button>
+              <div id="qConfirm" class="hidden text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-3"></div>
+              <div class="text-[11px] text-gray-500">Tip: You can also copy this summary into WhatsApp to contact us directly.</div>
+            </div>
+          </div>
+        </section>`;
+    },
+
+    search(){
+      const q = App.query.toLowerCase();
+      const list = PRODUCTS.filter(p=>{
+        const hay = [p.title_en,p.title_zh,p.brand,p.sport,p.category].filter(Boolean).join(' ').toLowerCase();
+        return q ? hay.includes(q) : true;
+      });
+      Root.innerHTML = `
+        <section class="flex flex-col md:flex-row gap-5">
+          <aside class="md:w-64 w-full md:sticky md:top-[68px] md:self-start">
+            <div class="rounded-xl border p-4 space-y-4 bg-white">
+              ${Facet.checkboxGroup('Brand', [...new Set(PRODUCTS.map(p=>p.brand))].sort(), 'brand')}
+              ${Facet.checkboxGroup('Colour', [...new Set(PRODUCTS.flatMap(p=>p.colors||[]))].sort(), 'color')}
+              ${Facet.checkboxGroup('Category', [...new Set(PRODUCTS.map(p=>p.category))].sort().map(cap), 'category', [...new Set(PRODUCTS.map(p=>p.category))])}
+              ${Facet.range('Recommended Tension (lbs)', 18, 32, 'tension')}
+              ${Facet.range('Price (HK$)', 0, 3000, 'price', 10)}
+              <button class="w-full text-sm mt-2 px-3 py-2 rounded-lg border" onclick="UI.clearFilters()">Clear Filters</button>
+            </div>
+          </aside>
+          <div class="flex-1">
+            <div class="mb-3"><h1 class="text-xl font-bold mb-1">Search Results</h1>
+              <input value="${App.query||''}" oninput="UI.searchInput(this.value)" onkeydown="if(event.key==='Enter'){navigate('/search',{q:this.value})}" placeholder="Search products, brands, categories…" class="w-full border rounded px-3 py-2" />
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              ${list.map(p=>`
+                <div class="rounded-xl border bg-white overflow-hidden group">
+                  <button onclick="UI.openPDP('${p.id}')" class="block w-full text-left">
+                    <div class="aspect-square bg-gray-100 flex items-center justify-center"><span class="text-xs text-gray-500">Image</span></div>
+                    <div class="p-3">
+                      <div class="text-xs text-gray-500 mb-1">${p.brand} • ${cap(p.category)}</div>
+                      <div class="font-semibold leading-tight mb-1 line-clamp-2">${p.title_en}</div>
+                      <div class="text-sm font-bold">${HK(p.price)}</div>
+                    </div>
+                  </button>
+                </div>`).join('')}
+              ${list.length===0?'<div class="col-span-full text-center text-sm text-gray-600 py-12">No results.</div>':''}
+            </div>
+          </div>
+        </section>`;
+    },
+
+    // Helpers / interactions
+    searchInput(v){ document.getElementById('globalSearch').value = v; },
+    clearFilters(){ App.filters = {}; UI.render(); },
+    setBrand(name){
+      const list = name? PRODUCTS.filter(p=>p.brand===name) : PRODUCTS;
+      document.getElementById('brandTitle').textContent = name || 'All Brands';
+      document.getElementById('brandGrid').innerHTML = list.map(p=>`
+        <div class="rounded-xl border bg-white overflow-hidden group">
+          <button onclick="UI.openPDP('${p.id}')" class="block w-full text-left">
+            <div class="aspect-square bg-gray-100 flex items-center justify-center"><span class="text-xs text-gray-500">Image</span></div>
+            <div class="p-3">
+              <div class="text-xs text-gray-500 mb-1">${p.brand} • ${cap(p.category)}</div>
+              <div class="font-semibold leading-tight mb-1 line-clamp-2">${p.title_en}</div>
+              <div class="text-sm font-bold">${HK(p.price)}</div>
+            </div>
+          </button>
+        </div>`).join('');
+    },
+
+    openPDP(id){
+      const p = PRODUCTS.find(x=>x.id===id);
+      document.getElementById('pdpTitle').textContent = p.title_en;
+      document.getElementById('pdpPrice').textContent = HK(p.price);
+      document.getElementById('pdpMeta').textContent = `${p.brand} • ${cap(p.category)}`;
+      document.getElementById('pdpImage').src = `images/products/${p.slug}.png`;
+      document.getElementById('pdpImage').alt = p.slug;
+
+      const specs = [];
+      if(p.specs.weight_class_u) specs.push(`<li>Weight Class: ${p.specs.weight_class_u}</li>`);
+      if(p.specs.weight_class_u) specs.push(`<li>Grip Class: ${p.specs.grip_class_g}</li>`);
+      if(p.specs.balance) specs.push(`<li>Balance: ${p.specs.balance}</li>`);
+      if(p.specs.head_size_cm2) specs.push(`<li>Head Size: ${p.specs.head_size_cm2} cm²</li>`);
+      if(p.specs.string_pattern) specs.push(`<li>String Pattern: ${p.specs.string_pattern}</li>`);
+      if(p.specs.recommended_tension_lbs_min || p.specs.recommended_tension_lbs_max) specs.push(`<li>Recommended Tension: ${p.specs.recommended_tension_lbs_min||'?'} – ${p.specs.recommended_tension_lbs_max||'?'} lbs</li>`);
+      document.getElementById('pdpSpecs').innerHTML = specs.join('');
+      
+      document.getElementById('pdpQty').value = 1;
+      document.getElementById('pdpStrToggle').checked = false;
+      document.getElementById('pdpStrPanel').classList.add('hidden');
+      document.getElementById('pdpStrLbs').value = '';
+      document.getElementById('pdpStrKg').textContent='';
+      document.getElementById('pdpStrWarn').classList.add('hidden');
+      document.getElementById('pdpAddBtn').onclick = ()=>{
+        const qty = Math.max(1, parseInt(document.getElementById('pdpQty').value||'1'));
+        let stringing;
+        if(document.getElementById('pdpStrToggle').checked){
+          const lbs = parseFloat(document.getElementById('pdpStrLbs').value||'0');
+          stringing = {
+            racket_type: p.sport==='tennis'?'tennis':(p.sport==='badminton'?'badminton':'squash'),
+            string_model: document.getElementById('pdpStrModel').value,
+            tension_lbs: lbs || undefined,
+            pattern: document.getElementById('pdpStrPattern').value,
+            pre_stretch: document.getElementById('pdpStrPre').checked,
+          };
+        }
+        const idx = App.cart.findIndex(it=>it.productId===p.id);
+        if(idx>=0){ App.cart[idx].qty += qty; if(stringing) App.cart[idx].stringing = stringing; }
+        else App.cart.push({ productId:p.id, qty, stringing });
+        App.setCart(App.cart);
+        UI.closePDP();
+        navigate('/cart');
+      };
+      document.getElementById('pdpStrToggle').onchange = (e)=>{
+        document.getElementById('pdpStrPanel').classList.toggle('hidden', !e.target.checked);
+      };
+      document.getElementById('pdpStrLbs').oninput = (e)=>{
+        const v = parseFloat(e.target.value||'0');
+        document.getElementById('pdpStrKg').textContent = v? ('≈ '+(v/2.205).toFixed(1)+' kg') : '';
+        const min = p.specs.recommended_tension_lbs_min||0, max=p.specs.recommended_tension_lbs_max||999;
+        const warn = (v && (v<min || v>max));
+        document.getElementById('pdpStrWarn').classList.toggle('hidden', !warn);
+      };
+      document.getElementById('pdpModal').classList.remove('hidden');
+      document.getElementById('pdpModal').classList.add('flex');
+      document.getElementById('pdpModal').setAttribute('aria-hidden','false');
+    },
+    closePDP(){
+      document.getElementById('pdpModal').classList.add('hidden');
+      document.getElementById('pdpModal').classList.remove('flex');
+      document.getElementById('pdpModal').setAttribute('aria-hidden','true');
+    },
+
+    q(i, val){ App.cart[i].qty = Math.max(1, parseInt(val||'1')); App.setCart(App.cart); UI.cart(); },
+    rm(i){ App.cart.splice(i,1); App.setCart(App.cart); UI.cart(); },
+    submitQuote(){
+      const id = 'Q-' + Math.random().toString(36).slice(2,8).toUpperCase();
+      const box = document.getElementById('qConfirm');
+      box.textContent = 'Submitted. Your quote number: ' + id;
+      box.classList.remove('hidden');
+    },
+    submitStringing(){
+      const id = 'STR-' + Math.random().toString(36).slice(2,8).toUpperCase();
+      const box = document.getElementById('strConfirm');
+      box.textContent = 'Order submitted. Your reference: ' + id;
+      box.classList.remove('hidden');
+      // After showing confirmation, also prepare a WhatsApp message so staff can receive booking details
+      try{ UI.sendStringingWhatsApp(); }catch(e){ /* non-blocking */ }
+    },
+
+    // Send stringing booking details to WhatsApp (uses form inputs in the stringing view)
+    sendStringingWhatsApp(phone = '85260190614'){
+      // collect form values
+      const type = document.getElementById('strType')?.value || '';
+      const model = document.getElementById('strModel')?.value || '';
+      const gauge = document.getElementById('strGauge')?.value || '';
+      const lbs = document.getElementById('strLbs')?.value || '';
+      const pattern = document.getElementById('strPattern')?.value || '';
+      const pre = document.getElementById('strPre')?.checked ? 'Yes' : 'No';
+      const drop = document.getElementById('strDrop')?.value || '';
+      const dt = document.getElementById('strDT')?.value || '';
+      const notes = document.getElementById('strNotes')?.value || '';
+      const name = document.getElementById('qName')?.value || '';
+      const phoneInput = document.getElementById('qPhone')?.value || '';
+
+      const lines = [];
+      const ref = 'STR-' + Math.random().toString(36).slice(2,8).toUpperCase();
+      lines.push(`Stringing Booking: ${ref}`);
+      lines.push('---');
+      if(type) lines.push(`Racket type: ${type}`);
+      if(model) lines.push(`String model: ${model}`);
+      if(gauge) lines.push(`Gauge: ${gauge} mm`);
+      if(lbs) lines.push(`Tension: ${lbs} lbs (${(parseFloat(lbs)||0/2.205).toFixed(1)} kg)`);
+      if(pattern) lines.push(`Pattern: ${pattern}`);
+      lines.push(`Pre-stretch: ${pre}`);
+      if(drop) lines.push(`Drop-off: ${drop}`);
+      if(dt) lines.push(`Preferred time: ${dt}`);
+      if(notes) { lines.push(''); lines.push(`Notes: ${notes}`); }
+      lines.push('---');
+      if(name) lines.push(`Customer: ${name}`);
+      if(phoneInput) lines.push(`Contact: ${phoneInput}`);
+
+      const message = lines.join('\n');
+      const encoded = encodeURIComponent(message);
+      const waUrl = `https://wa.me/${phone}?text=${encoded}`;
+      const win = window.open(waUrl, '_blank');
+      if(!win) window.location.href = waUrl;
+    },
+
+    // Send cart summary to WhatsApp (opens wa.me with prefilled message)
+    sendWhatsAppQuote(phone = '85260190614'){
+      if(!App.cart || App.cart.length===0){ alert('Your cart is empty'); return; }
+      const orderId = 'Q-' + Math.random().toString(36).slice(2,8).toUpperCase();
+      const lines = [];
+      lines.push(`Quote / Reservation: ${orderId}`);
+      lines.push('---');
+      let total = 0;
+      App.cart.forEach(it=>{
+        const p = PRODUCTS.find(x=>x.id===it.productId);
+        if(!p) return;
+        const qty = it.qty || 1;
+        const price = p.price || 0;
+        const subtotal = qty * price;
+        total += subtotal;
+        lines.push(`${qty} x ${p.title_en}`);
+        lines.push(`HK$${price} x ${qty}`);
+        lines.push(`= HK$${subtotal}`);
+      });
+      lines.push('---');
+      lines.push(`Subtotal: HK$${total}`);
+      const name = document.getElementById('qName')?.value || '';
+      const phoneInput = document.getElementById('qPhone')?.value || '';
+      if(name) lines.push(`Name: ${name}`);
+      if(phoneInput) lines.push(`Contact: ${phoneInput}`);
+      const note = document.getElementById('qNote')?.value || '';
+      if(note) { lines.push(''); lines.push(`Notes: ${note}`); }
+      const message = lines.join('\n');
+      const encoded = encodeURIComponent(message);
+      const waUrl = `https://wa.me/${phone}?text=${encoded}`;
+      const win = window.open(waUrl, '_blank');
+      if(!win) window.location.href = waUrl;
+    },
+
+    updateCartIcon(){
+      const n = App.cart.reduce((a,b)=>a + (b.qty||1), 0);
+      const cc = document.getElementById('cartCount');
+      if(n>0){ cc.className = 'absolute -top-2 -right-1 text-[10px] bg-indigo-600 text-white rounded-full px-1.5 py-0.5'; cc.textContent = n; }
+      else { cc.className = 'hidden'; cc.textContent=''; }
+    }
+  };
+
+  const Facet = {
+    checkboxGroup(title, values, key, rawVals){
+      const sel = App.filters[key]||[];
+      const gid = `facet-${key}`;
+      return `
+        <div class="border-b pb-3 last:border-b-0 last:pb-0">
+          <div class="flex items-center justify-between mb-2">
+            <div class="font-semibold text-sm">${title}</div>
+            <button class="text-xs px-2 py-1 rounded border" onclick="Facet.toggleGroup('${gid}')" id="${gid}-btn">Collapse</button>
+          </div>
+          <div id="${gid}" class="space-y-1">
+            ${values.map((v,i)=>{
+              const real = rawVals? rawVals[i] : v;
+              const id = `${key}-${i}`;
+              const checked = sel.includes(real)? 'checked' : '';
+              return `<label class="flex items-center gap-2 text-sm"><input type="checkbox" ${checked} class="accent-indigo-600" onchange="Facet.toggle('${key}','${real.replace(/'/g,"\\'")} ', this.checked)"/> <span>${v}</span></label>`;
+            }).join('')}
+          </div>
+        </div>`;
+    },
+    toggle(key, val, on){
+      const set = new Set(App.filters[key]||[]);
+      if(on) set.add(val.trim()); else set.delete(val.trim());
+      App.filters[key] = Array.from(set);
+      UI.render();
+    },
+    range(title, min, max, key, step=1){
+      const cur = App.filters[key] || [min, max];
+      const idA = key+'A', idB=key+'B';
+      return `
+        <div class="text-sm">
+          <div class="font-semibold mb-1">${title}</div>
+          <div class="flex items-center gap-2">
+            <input id="${idA}" type="range" min="${min}" max="${max}" step="${step}" value="${cur[0]}" class="w-full" oninput="Facet.rangeChange('${key}',true,this.value)"/>
+            <input id="${idB}" type="range" min="${min}" max="${max}" step="${step}" value="${cur[1]}" class="w-full" oninput="Facet.rangeChange('${key}',false,this.value)"/>
+          </div>
+          <div class="flex justify-between text-xs text-gray-600 mt-1"><span id="${idA}v">${cur[0]}</span><span id="${idB}v">${cur[1]}</span></div>
+        </div>`;
+    },
+    rangeChange(key, isA, val){
+      const cur = App.filters[key] || [0,0];
+      const a = isA ? Math.min(+val, cur[1]||+val) : (cur[0]||0);
+      const b = isA ? (cur[1]||0) : Math.max(+val, a);
+      App.filters[key] = [a,b];
+      UI.render();
+    }
+    ,
+    // Group collapse control
+    toggleGroup(id){
+      const el = document.getElementById(id);
+      const btn = document.getElementById(id+'-btn');
+      if(!el || !btn) return;
+      const collapsed = el.classList.toggle('hidden');
+      btn.textContent = collapsed ? 'Expand' : 'Collapse';
+      try{ localStorage.setItem('wb_facet_'+id, collapsed? '1':'0'); }catch(e){}
+    },
+    initGroups(){
+      try{
+        // find keys in localStorage that start with wb_facet_
+        Object.keys(localStorage).forEach(k=>{
+          if(k.startsWith('wb_facet_')){
+            const id = k.replace('wb_facet_','');
+            const val = localStorage.getItem(k);
+            const el = document.getElementById(id);
+            const btn = document.getElementById(id+'-btn');
+            if(el){
+              if(val === '1') el.classList.add('hidden'); else el.classList.remove('hidden');
+              if(btn) btn.textContent = (val==='1')? 'Expand':'Collapse';
+            }
+          }
+        });
+      }catch(e){}
+    }
+  };
+
+  // Global search
+  document.getElementById('btnSearch').addEventListener('click', ()=>{
+    const v = document.getElementById('globalSearch').value||''; navigate('/search', { q: v });
+  });
+  document.getElementById('globalSearch').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ document.getElementById('btnSearch').click(); }});
+
+  // Router
+  window.addEventListener('hashchange', ()=>UI.render());
+  UI.render();
+  UI.updateCartIcon();
+  // initialize facet group collapse states
+  try{ Facet.initGroups(); }catch(e){}
+  </script>
+</body>
+</html>
